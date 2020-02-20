@@ -16,14 +16,15 @@ import { Formik } from 'formik';
 import { Icon } from 'react-native-elements';
 
 const formValidationSchema = yup.object().shape({
-  email: yup.string().email('Invalid Email').required('Required')
+  email: yup.string().email('Invalid Email').required('Required'),
+  password: yup.string().min(6, 'Password is too Short').required('Required')
 });
 
-export default class ResetPassword extends Component {
-  resetPassword({ email }) {
+export default class Login extends Component {
+  login({ email, password }) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        console.log('reset password');
+        console.log('login');
         resolve(true);
       }, 2000);
     });
@@ -35,12 +36,12 @@ export default class ResetPassword extends Component {
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior='padding'>
         <Formik
-          initialValues={{ email: '' }}
+          initialValues={{ email: '', password: '' }}
           validationSchema={formValidationSchema}
           onSubmit={(values, { setSubmitting }) => {
-            this.login({ email: values.email })
+            this.login({ email: values.email, password: values.password })
               .then(() => {
-                Alert.alert('Reset Password successfully');
+                Alert.alert('Login successfully');
                 setSubmitting(false);
               })
               .catch((error) => {
@@ -73,16 +74,33 @@ export default class ResetPassword extends Component {
                   </Text>
                 </View>
 
+                <View style={styles.inputContainer}>
+                  <Icon name="lock" containerStyle={{ padding: 10 }} />
+                  <TextInput style={styles.inputs}
+                    placeholder="Password"
+                    secureTextEntry={true}
+                    underlineColorAndroid='transparent'
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    value={values.password}
+                  />
+                  <Text style={{ color: 'red' }}>
+                    {touched.password && errors.password}
+                  </Text>
+                </View>
                 {
                   isSubmitting ? <ActivityIndicator /> : <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={handleSubmit}>
-                    <Text style={styles.loginText}>Reset Password</Text>
+                    <Text style={styles.loginText}>Login</Text>
                   </TouchableHighlight>
                 }
 
-                <TouchableHighlight style={styles.buttonContainer} onPress={() => navigation.navigate('Login')}>
-                  <Text>Back To Login</Text>
+                <TouchableHighlight style={styles.buttonContainer} onPress={() => navigation.navigate('Reset')}>
+                  <Text>Forgot your password?</Text>
                 </TouchableHighlight>
 
+                <TouchableHighlight style={[styles.buttonContainer]} onPress={() => navigation.navigate('Signup')}>
+                  <Text>Register</Text>
+                </TouchableHighlight>
               </View>
             )}
 
